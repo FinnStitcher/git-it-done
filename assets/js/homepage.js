@@ -20,23 +20,37 @@ var getUserRepos = function(user) {
     var apiUrl = "https://api.github.com/users/" + user + "/repos";
 
     // fetch info
-    fetch(apiUrl)
     // do stuff with response promise
+    fetch(apiUrl)
     .then(function (response) {
-        // format response into json promise
-        response.json()
-        // do stuff with that promise
-        .then(function (data) {
-            displayRepos(data, user);
-        });
+        if (response.ok) {
+            // format response into json promise
+            // do stuff with that promise
+            response.json()
+            .then(function (data) {
+                displayRepos(data, user);
+            });
+        } else {
+            alert("Error: GitHub user not found.");
+        };
+    })
+    .catch(function (error) {
+        alert("Unable to connect to GitHub.");
     });
 };
 
 var displayRepos = function(repos, searchTerm) {
-    // Clear old content
+    // clear old content
     repoContainerEl.textContent = "";
     repoSearchTerm.textContent = searchTerm;
 
+    // check if empty
+    if (repos.length === 0) {
+        repoContainerEl.textContent = "No respositories found.";
+        return;
+    };
+
+    // print repos
     for (var i = 0; i < repos.length; i++) {
         var repoName = repos[i].owner.login + "/" + repos[i].name;
 
